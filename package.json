@@ -1,0 +1,17 @@
+{
+  "name": "node-AuthZN",
+  "main": "server.js",
+  "dependencies": {
+    "express": "~4.0.0",
+    "body-parser": "~1.0.1"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "test": "./node_modules/.bin/mocha"
+  },
+  "devDependencies": {
+    "mocha": "^3.2.0",
+    "should": "^11.2.1",
+    "supertest": "^3.0.0"
+  }
+}
