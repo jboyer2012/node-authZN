@@ -1,40 +1,102 @@
-var accountModule = require('./accountModule');
+var Account = require('../data/AccountModel');
 
 module.exports = {
 
-    retrieveAccountInfo: function(req, res) {
-        var accountNumber = req.params.number;
-        var balance = accountModule.retrieveBalance(accountNumber); 
+    createAccount: function(req, res){
+        var newAccount = new Account();
+        newAccount.accountNumber = "897879";
+        newAccount.balance = 3000;
 
-        res.json({ accountBalance: balance });
+        newAccount.save(function(err, newAccount){
+            if(err){
+                console.log('Error: ' + err);
+            }
+            res.send(newAccount);
+        });
+    },
+
+    retrieveAccountInfo: function(req, res) {
+        Account.findOne({ accountNumber: req.params.number }, function(err, account){
+            if(err){
+                console.log('Error: ' + err);
+            }
+            res.json({ accountBalance: account.balance });
+
+        });
     },
 
     deposit: function(req, res) {
-        var accountNumber = req.body.number;
-        var amount = req.body.amount;
+        Account.findOne({ accountNumber: req.body.number }, function(err, account){
+            if(err){
+                console.log('Error: ' + err);
+            }
+            account.addToAccount(req.body.amount);
+            account.save(function(err){
+                if(err){
+                    console.log('Error: ' + err);
+                }
+            });
+            res.json({ newBalance: account.balance });
 
-        var newBalance = accountModule.depositFunds(accountNumber, amount);
-
-        res.json({ newBalance: newBalance});
+        });
     },
 
     redeem: function(req, res){
-        var accountNumber = req.body.number;
-        var amount = req.body.amount;
+        Account.findOne({ accountNumber: req.body.number }, function(err, account){
+            if(err){
+                console.log('Error: ' + err);
+            }
+            account.subtractFromAccount(req.body.amount);
+            account.save(function(err){
+                if(err){
+                    console.log('Error: ' + err);
+                }
+            });
+            res.json({ newBalance: account.balance });
+        });
+    },
 
-        var newBalance = accountModule.redeem(accountNumber, amount);
-
-        res.json({ newBalance: newBalance });
-    }
-
-    /*transfer: function(req, res) {
+    transfer: function(req, res) {
         var fromAccountNumber = req.body.fromNumber;
         var toAccountNumber = req.body.toNumber;
         var amount = req.body.amount;
+        var responseObject;
 
-        accountModule.transferFunds(fromAccountNumber, toAccountNumber, amount);
+        Account.find({ accountNumber: { $in: [fromAccountNumber, toAccountNumber]}}, function(err, accounts){
+            if(err){
+                console.log('Error: ' + err);
+            }
+            var fromAccount, toAccount;
+            for(var i = 0; i < accounts.length; i++){
+                if(accounts[i].accountNumber === fromAccountNumber){
+                    fromAccount = accounts[i];
+                }
+                if(accounts[i].accountNumber === toAccountNumber){
+                    toAccount = accounts[i];
+                }
+            }
 
-        res.send(200);
-    }*/
+            fromAccount.subtractFromAccount(amount);
+            fromAccount.save(function(err){
+                if(err){
+                    console.log('Error: ' + err);
+                }
+            });
+            toAccount.addToAccount(amount);
+            toAccount.save(function(err){
+                if(err){
+                    console.log('Error: ' + err);
+                }
+            });
+            responseObject = {
+                accountTransferredFrom: fromAccountNumber,
+                accountTransfferedTo: toAccountNumber,
+                amountTransferred: amount,
+                fromAccountNewBalance: fromAccount.balance,
+                toAccountNewBalance: toAccount.balance
+            };
+            res.send(responseObject);
+        });
+    }
 
 };

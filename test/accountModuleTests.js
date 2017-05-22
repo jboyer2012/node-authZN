@@ -1,4 +1,4 @@
-var accountModule = require('../app/bank/accountModule');
+/*var accountModule = require('../app/bank/accountModule');
 var should = require('should');
 
 describe('Retrieve balance from account module', function(){
@@ -69,4 +69,4 @@ describe('Transfer money from one account to another', function(){
 
         
     });
-});
+});*/

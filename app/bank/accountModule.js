@@ -1,68 +1,40 @@
 var accounts = require('./accountRepository').accounts;
 
+
 module.exports = {
 
     retrieveBalance: function(numberToFind){
-
-        for(var i = 0; i < accounts.length; i++){
-            if(accounts[i].accountNumber === numberToFind){
-                return accounts[i].balance;
-            }
-        }
-
-        return "No matching account.";
+        
+        
     },
 
-    depositFunds: function(accountNumber, amount){
-        for(var i = 0; i < accounts.length; i++){
-            var currAccount = accounts[i];
-            if(currAccount.accountNumber === accountNumber){
-                currAccount.balance = currAccount.balance + amount;
-                return currAccount.balance;
-            }
-        }
+    depositFunds: function(accountNumber, amount){  
+        var account = Account.find({ accountNumber: accountNumber });
 
-        return "No matching account.";
+        account.addToAccount(amount);
+
+        return account.balance;
     },
 
     redeem: function(accountNumber, amount){
-        for(var i = 0; i < accounts.length; i++){
-            var currAccount = accounts[i];
-            if(currAccount.accountNumber === accountNumber){
-                currAccount.balance = currAccount.balance - amount;
-                return currAccount.balance;
-            }
-        }
+         var account = Account.find({ accountNumber: accountNumber });
 
-        return "No matching account";
+         account.subtractFromAccount(amount);
+
+         return account.balance;
     },
 
     transferFunds: function(fromAccountNumber, toAccountNumber, amount){
-        var fromAccount, toAccount;
-        for(var i = 0; i < accounts.length; i++){
-            var currAccount = accounts[i];
-            if(currAccount.accountNumber === fromAccountNumber){
-                fromAccount = currAccount;
-            }
-        }
+        var fromAccount = Account.find({ accountNumber: fromAccountNumber });
+        var toAccount = Account.find({ accountNumber: toAccountNumber });
 
-        for(var i = 0; i < accounts.length; i++){
-            var currAccount = accounts[i];
-            if(currAccount.accountNumber === toAccountNumber){
-                toAccount = currAccount;
-            }
-        }
-
-        fromAccount.balance = fromAccount.balance - amount;
-        toAccount.balance = toAccount.balance + amount;
+        fromAccount.subtractFromAccount(amount);
+        toAccount.addToAccount(amount);
     },
 
     setBalance: function(accountNumber, newBalance){
-        for(var i = 0; i < accounts.length; i++){
-            var currAccount = accounts[i];
-            if(currAccount.accountNumber === accountNumber){
-                currAccount.balance = newBalance;
-            }
-        }
+        var account = Account.find({ accountNumber: accountNumber });
+
+        account.setAccountBalance(newBalance);
     }
 };

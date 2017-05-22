@@ -3,6 +3,8 @@ var express    = require('express')
 var app        = express()
 var bodyParser = require('body-parser')
 var routes = require('./app/bank')
+var mongoose = require('mongoose')
+var Account = require('./app/data/AccountModel')
 
 // configure app to use bodyParser()
 // this will let us get the data from a POST
@@ -14,6 +16,17 @@ var port = process.env.PORT || 3000
 // ROUTING
 var router = express.Router()
 
+mongoose.connect('mongodb://localhost/auth_zn')
+
+var db = mongoose.connection;
+db.on('open', function(){
+  console.log("Connected to mongodb");
+});
+
+router.get('/account/create', function(req, res){
+  routes.createAccount(req, res);
+});
+
 router.get('/account/:number', function(req, res){
   routes.retrieveAccountInfo(req, res);
 });
@@ -22,9 +35,9 @@ router.post('/deposit', function(req, res) {
   routes.deposit(req, res);
 });
 
-/*router.post('/transfer', function(req, res) {
+router.post('/transfer', function(req, res) {
   routes.transfer(req, res)
-});*/
+});
 
 router.post('/redeem', function(req, res){
   routes.redeem(req, res);

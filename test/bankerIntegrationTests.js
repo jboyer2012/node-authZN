@@ -1,6 +1,6 @@
 var request = require('supertest');
 var should = require('should');
-var accountModule = require('../app/bank/accountModule');
+var Account = require('../app/data/AccountModel');
 var appUnderTest = require('../server');
 
 describe('GET to retrieve an account balance', function(){
@@ -15,7 +15,17 @@ describe('GET to retrieve an account balance', function(){
 
 describe('POST to deposit money', function(){
     afterEach(function(){
-        accountModule.setBalance("123456", 500);
+        Account.findOne({ accountNumber: "123456" }, function(err, account){
+            if(err){
+                console.log('Error: ' + err);
+            }
+            account.setAccountBalance(500);
+            account.save(function(err){
+                if(err){
+                    console.log('Error: ' + err);
+                }
+            });
+        });
     });
     it('should add the correct amount to the balance', function(done){
         var postData = { "number": "123456", "amount": 300.00 };
@@ -30,7 +40,17 @@ describe('POST to deposit money', function(){
 
 describe('POST to redeem money', function(){
     afterEach(function(){
-        accountModule.setBalance("434545", 1000);
+        Account.findOne({ accountNumber: "434545" }, function(err, account){
+            if(err){
+                console.log('Error: ' + err);
+            }
+            account.setAccountBalance(1000);
+            account.save(function(err){
+                if(err){
+                    console.log('Error: ' + err);
+                }
+            });
+        });
     });
 
     it('should redeem the correct amount', function(done){
@@ -44,31 +64,46 @@ describe('POST to redeem money', function(){
     });
 });
 
-/*describe('POST to transfer money', function(){
+describe('POST to transfer money', function(){
     afterEach(function(){
-        accountModule.setBalance("123456", 500);
-        accountModule.setBalance("434545", 1000);
+        Account.findOne({ accountNumber: "123456" }, function(err, account){
+            if(err){
+                console.log('Error: ' + err);
+            }
+            account.setAccountBalance(500);
+            account.save(function(err){
+                if(err){
+                    console.log('Error: ' + err);
+                }
+            });
+        });
+
+        Account.findOne({ accountNumber: "434545" }, function(err, account){
+            if(err){
+                console.log('Error: ' + err);
+            }
+            account.setAccountBalance(1000);
+            account.save(function(err){
+                if(err){
+                    console.log('Error: ' + err);
+                }
+            });
+        });
     });
 
     it('should transfer the correct amount', function(done){
-        var postData = { "fromNumber": "434545", "toNumber": "123456", "amount": 500 };
+        var postData = { "fromNumber": "434545", "toNumber": "123456", "amount": 500 },
+            expectedResult = { 
+                accountTransferredFrom: "434545",
+                accountTransfferedTo: "123456",
+                amountTransferred: 500,
+                fromAccountNewBalance: 500,
+                toAccountNewBalance: 1000
+            };
         request(appUnderTest)
             .post('/banker/transfer')
             .send(postData)
             .set('Accept', 'application/json')
-            .expect(200);
-
-        // check new balances
-        request(appUnderTest)
-            .get('/banker/account/123456')
-            .set('Accept', 'application/json')
-            .expect(200)
-            .expect('{"accountBalance":1000}');
-
-        request(appUnderTest)
-            .get('/banker/account/434545')
-            .set('Accept', 'application/json')
-            .expect(200)
-            .expect('{"accountBalance":500}', done);
+            .expect(expectedResult, done);
     });
-});*/
+});
