@@ -21,7 +21,6 @@ module.exports = {
                 console.log('Error: ' + err);
             }
             res.json({ accountBalance: account.balance });
-
         });
     },
 
@@ -37,11 +36,10 @@ module.exports = {
                 }
             });
             res.json({ newBalance: account.balance });
-
         });
     },
 
-    redeem: function(req, res){
+    withdraw: function(req, res){
         Account.findOne({ accountNumber: req.body.number }, function(err, account){
             if(err){
                 console.log('Error: ' + err);

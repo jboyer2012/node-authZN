@@ -2,8 +2,11 @@
   "name": "node-AuthZN",
   "main": "server.js",
   "dependencies": {
+    "bcrypt": "^1.0.2",
+    "body-parser": "~1.0.1",
     "express": "~4.0.0",
-    "body-parser": "~1.0.1"
+    "passport": "^0.3.2",
+    "passport-local": "^1.0.0"
   },
   "scripts": {
     "start": "node server.js",

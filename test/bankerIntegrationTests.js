@@ -38,7 +38,7 @@ describe('POST to deposit money', function(){
     });
 });
 
-describe('POST to redeem money', function(){
+describe('POST to withdraw money', function(){
     afterEach(function(){
         Account.findOne({ accountNumber: "434545" }, function(err, account){
             if(err){
@@ -53,10 +53,10 @@ describe('POST to redeem money', function(){
         });
     });
 
-    it('should redeem the correct amount', function(done){
+    it('should withdraw the correct amount', function(done){
         var postData = { "number": "434545", "amount": 300.00 };
         request(appUnderTest)
-            .post('/banker/redeem')
+            .post('/banker/withdraw')
             .send(postData)
             .set('Accept', 'application/json')
             .expect(200)
