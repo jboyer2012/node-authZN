@@ -1,7 +1,25 @@
 var request = require('supertest');
 var should = require('should');
 var Account = require('../app/data/AccountModel');
+var User = require('../app/data/UserModel');
 var appUnderTest = require('../server');
+
+describe('POST to login to the application', function() {
+    before(function(done){
+        var user = new User();
+        user.email = "user@user.com"
+        user.password = user.generateHash("pass11");
+
+        user.save(done);
+    });
+    it('should return success', function(done){
+        var loginData = { "email": "user@user.com", "password": "pass11" };
+        request(appUnderTest)
+            .post('/banker/login')
+            .send(loginData)
+            .expect(200, done);
+    });
+});
 
 describe('GET to retrieve an account balance', function(){
     it('should return the account balance', function(done){
@@ -39,6 +57,8 @@ describe('POST to deposit money', function(){
 });
 
 describe('POST to withdraw money', function(){
+    var token = '';
+
     afterEach(function(){
         Account.findOne({ accountNumber: "434545" }, function(err, account){
             if(err){
@@ -53,8 +73,21 @@ describe('POST to withdraw money', function(){
         });
     });
 
+    before(function(done){
+        debugger;
+        var loginData = { "email": "user@user.com", "password": "pass11" };
+        request(appUnderTest)
+            .post('/banker/login')
+            .send(loginData)
+            .expect(function(res){
+                token = res.body.token;
+            })
+            .expect(200, done);
+    })
+
     it('should withdraw the correct amount', function(done){
-        var postData = { "number": "434545", "amount": 300.00 };
+        debugger;
+        var postData = { "number": "434545", "amount": 300.00, "token": token };
         request(appUnderTest)
             .post('/banker/withdraw')
             .send(postData)
@@ -106,4 +139,12 @@ describe('POST to transfer money', function(){
             .set('Accept', 'application/json')
             .expect(expectedResult, done);
     });
+
+    after(function(){
+        User.remove({ 'email': 'user@user.com'}, function(err){
+            if(err){
+                throw err;
+            }
+        });
+    })
 });

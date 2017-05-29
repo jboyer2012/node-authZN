@@ -1,19 +1,9 @@
-var Account = require('../data/AccountModel');
+var Account = require('../data/AccountModel'),
+    User = require('../data/UserModel'),
+    createToken = require('../utils/createToken'),
+    constants = require('../config/constants');
 
 module.exports = {
-
-    createAccount: function(req, res){
-        var newAccount = new Account();
-        newAccount.accountNumber = "897879";
-        newAccount.balance = 3000;
-
-        newAccount.save(function(err, newAccount){
-            if(err){
-                console.log('Error: ' + err);
-            }
-            res.send(newAccount);
-        });
-    },
 
     retrieveAccountInfo: function(req, res) {
         Account.findOne({ accountNumber: req.params.number }, function(err, account){
@@ -94,6 +84,64 @@ module.exports = {
                 toAccountNewBalance: toAccount.balance
             };
             res.send(responseObject);
+        });
+    },
+
+    signup: function(req, res){
+        // find a user whose email is the same as the email entered
+        // checking if the user already exists
+        User.findOne({ 'email' : req.body.email }, function(err, user){
+
+            if(err) {
+                throw err;
+            }
+
+            if(user) {
+                res.status(400).json({ success: false, message: "Email already taken" });
+            } else {
+                var newUser = new User();
+
+                newUser.email = email;
+                newUser.password = newUser.generateHash(password);
+            }
+
+            newUser.save(function(err){
+                if(err) {
+                    throw err;
+                }
+                res.status(200).json({ success: true, message: 'User created!' });
+            });
+
+        })
+    },
+
+    login: function(req, res){
+        var email = req.body.email;
+        var password = req.body.password;
+
+        User.findOne({ 'email': email }, function(err, user){
+            if (err){
+                throw err;
+            }
+
+            if(!user){
+                res.status(400).json({ success: false, message: "Login incorrect" });
+            } else if (user) {
+                if(!user.validPassword(password)){
+                    res.status(400).json({ success: false, message: "Login incorrect" });
+                }
+
+                var payload = { email: user.email };
+                var token = createToken(payload, constants.TOKEN_EXPIRES_IN);
+
+                res.status(200).json({
+                    success: true,
+                    message: "Login successful" + user.email,
+                    email: user.email,
+                    token: token
+                });
+
+            }
         });
     }
 
