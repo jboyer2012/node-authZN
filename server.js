@@ -30,11 +30,11 @@ router.get('/account/:number', function(req, res){
   routes.retrieveAccountInfo(req, res);
 });
 
-router.post('/deposit', function(req, res) {
+router.post('/deposit', verifyToken, function(req, res) {
   routes.deposit(req, res);
 });
 
-router.post('/transfer', function(req, res) {
+router.post('/transfer', verifyToken, function(req, res) {
   routes.transfer(req, res)
 });
 

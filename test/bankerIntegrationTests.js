@@ -31,50 +31,9 @@ describe('GET to retrieve an account balance', function(){
     });
 });
 
-describe('POST to deposit money', function(){
-    afterEach(function(){
-        Account.findOne({ accountNumber: "123456" }, function(err, account){
-            if(err){
-                console.log('Error: ' + err);
-            }
-            account.setAccountBalance(500);
-            account.save(function(err){
-                if(err){
-                    console.log('Error: ' + err);
-                }
-            });
-        });
-    });
-    it('should add the correct amount to the balance', function(done){
-        var postData = { "number": "123456", "amount": 300.00 };
-        request(appUnderTest)
-            .post('/banker/deposit')
-            .send(postData)
-            .set('Accept', 'application/json')
-            .expect(200)
-            .expect('{"newBalance":800}', done);
-    });
-});
-
-describe('POST to withdraw money', function(){
+describe('Transactions that require authentication', function(){
     var token = '';
-
-    afterEach(function(){
-        Account.findOne({ accountNumber: "434545" }, function(err, account){
-            if(err){
-                console.log('Error: ' + err);
-            }
-            account.setAccountBalance(1000);
-            account.save(function(err){
-                if(err){
-                    console.log('Error: ' + err);
-                }
-            });
-        });
-    });
-
     before(function(done){
-        debugger;
         var loginData = { "email": "user@user.com", "password": "pass11" };
         request(appUnderTest)
             .post('/banker/login')
@@ -83,10 +42,19 @@ describe('POST to withdraw money', function(){
                 token = res.body.token;
             })
             .expect(200, done);
-    })
+    });
+
+    it('should deposit the correct amount', function(done){
+        var postData = { "number": "123456", "amount": 300.00, "token": token };
+        request(appUnderTest)
+            .post('/banker/deposit')
+            .send(postData)
+            .set('Accept', 'application/json')
+            .expect(200)
+            .expect('{"newBalance":800}', done);
+    });
 
     it('should withdraw the correct amount', function(done){
-        debugger;
         var postData = { "number": "434545", "amount": 300.00, "token": token };
         request(appUnderTest)
             .post('/banker/withdraw')
@@ -95,37 +63,9 @@ describe('POST to withdraw money', function(){
             .expect(200)
             .expect('{"newBalance":700}', done);
     });
-});
-
-describe('POST to transfer money', function(){
-    afterEach(function(){
-        Account.findOne({ accountNumber: "123456" }, function(err, account){
-            if(err){
-                console.log('Error: ' + err);
-            }
-            account.setAccountBalance(500);
-            account.save(function(err){
-                if(err){
-                    console.log('Error: ' + err);
-                }
-            });
-        });
-
-        Account.findOne({ accountNumber: "434545" }, function(err, account){
-            if(err){
-                console.log('Error: ' + err);
-            }
-            account.setAccountBalance(1000);
-            account.save(function(err){
-                if(err){
-                    console.log('Error: ' + err);
-                }
-            });
-        });
-    });
 
     it('should transfer the correct amount', function(done){
-        var postData = { "fromNumber": "434545", "toNumber": "123456", "amount": 500 },
+        var postData = { "fromNumber": "434545", "toNumber": "123456", "amount": 500, "token": token },
             expectedResult = { 
                 accountTransferredFrom: "434545",
                 accountTransfferedTo: "123456",
@@ -141,10 +81,36 @@ describe('POST to transfer money', function(){
     });
 
     after(function(){
-        User.remove({ 'email': 'user@user.com'}, function(err){
+            User.remove({ 'email': 'user@user.com'}, function(err){
+                if(err){
+                    throw err;
+                }
+            });
+    });
+
+    afterEach(function(){
+        Account.findOne({ accountNumber: "123456" }, function(err, account){
             if(err){
-                throw err;
+                console.log('Error: ' + err);
             }
+            account.setAccountBalance(500);
+            account.save(function(err){
+                if(err){
+                    console.log('Error: ' + err);
+                }
+            });
         });
-    })
+
+        Account.findOne({ accountNumber: "434545" }, function(err, account){
+            if(err){
+                console.log('Error: ' + err);
+            }
+            account.setAccountBalance(1000);
+            account.save(function(err){
+                if(err){
+                    console.log('Error: ' + err);
+                }
+            });
+        });
+    });
 });
