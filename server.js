@@ -26,7 +26,7 @@ db.on('open', function(){
   console.log("Connected to mongodb");
 });
 
-router.get('/account/:number', function(req, res){
+router.get('/account/:number', verifyToken, function(req, res){
   routes.retrieveAccountInfo(req, res);
 });
 

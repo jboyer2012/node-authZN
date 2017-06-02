@@ -21,16 +21,6 @@ describe('POST to login to the application', function() {
     });
 });
 
-describe('GET to retrieve an account balance', function(){
-    it('should return the account balance', function(done){
-        request(appUnderTest)
-            .get('/banker/account/123456')
-            .set('Accept', 'application/json')
-            .expect(200)
-            .expect('{"accountBalance":500}', done);
-    });
-});
-
 describe('Transactions that require authentication', function(){
     var token = '';
     before(function(done){
@@ -42,6 +32,15 @@ describe('Transactions that require authentication', function(){
                 token = res.body.token;
             })
             .expect(200, done);
+    });
+
+    it('should return the account balance', function(done){
+        request(appUnderTest)
+            .get('/banker/account/123456')
+            .set('Accept', 'application/json')
+            .set('x-access-token', token)
+            .expect(200)
+            .expect('{"accountBalance":500}', done);
     });
 
     it('should deposit the correct amount', function(done){
