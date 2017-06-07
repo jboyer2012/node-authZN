@@ -5,9 +5,8 @@ var express    = require('express'),
     routes = require('./app/bank'),
     mongoose = require('mongoose'),
     Account = require('./app/data/AccountModel'),
-    verifyToken = require('./app/utils/verifyToken');
-//var passport = require('passport')
-//require('./app/config/passport')(passport)
+    verifyToken = require('./app/utils/verifyToken'),
+    authorizeForAccount = require('./app/utils/authorizeForAccount');
 
 // configure app to use bodyParser()
 // this will let us get the data from a POST
@@ -38,7 +37,7 @@ router.post('/transfer', verifyToken, function(req, res) {
   routes.transfer(req, res)
 });
 
-router.post('/withdraw', verifyToken, function(req, res){
+router.post('/withdraw', verifyToken, authorizeForAccount, function(req, res){
   routes.withdraw(req, res);
 });
 

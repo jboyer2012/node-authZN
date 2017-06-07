@@ -7,13 +7,13 @@ var appUnderTest = require('../server');
 describe('POST to login to the application', function() {
     before(function(done){
         var user = new User();
-        user.email = "user@user.com"
+        user.username = "user1";
         user.password = user.generateHash("pass11");
-
+        user.authorizedAccounts = ["123456", "434545"];
         user.save(done);
     });
     it('should return success', function(done){
-        var loginData = { "email": "user@user.com", "password": "pass11" };
+        var loginData = { "username": "user1", "password": "pass11" };
         request(appUnderTest)
             .post('/banker/login')
             .send(loginData)
@@ -24,7 +24,7 @@ describe('POST to login to the application', function() {
 describe('Transactions that require authentication', function(){
     var token = '';
     before(function(done){
-        var loginData = { "email": "user@user.com", "password": "pass11" };
+        var loginData = { "username": "user1", "password": "pass11" };
         request(appUnderTest)
             .post('/banker/login')
             .send(loginData)
@@ -80,7 +80,7 @@ describe('Transactions that require authentication', function(){
     });
 
     after(function(){
-            User.remove({ 'email': 'user@user.com'}, function(err){
+            User.remove({ 'username': 'user1'}, function(err){
                 if(err){
                     throw err;
                 }

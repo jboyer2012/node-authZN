@@ -90,7 +90,7 @@ module.exports = {
     signup: function(req, res){
         // find a user whose email is the same as the email entered
         // checking if the user already exists
-        User.findOne({ 'email' : req.body.email }, function(err, user){
+        User.findOne({ 'username' : req.body.username }, function(err, user){
 
             if(err) {
                 throw err;
@@ -116,10 +116,10 @@ module.exports = {
     },
 
     login: function(req, res){
-        var email = req.body.email;
+        var username = req.body.username;
         var password = req.body.password;
 
-        User.findOne({ 'email': email }, function(err, user){
+        User.findOne({ 'username': username }, function(err, user){
             if (err){
                 throw err;
             }
@@ -131,7 +131,7 @@ module.exports = {
                     res.status(400).json({ success: false, message: "Login incorrect" });
                 }
 
-                var payload = { email: user.email };
+                var payload = { username: user.username };
                 var token = createToken(payload, constants.TOKEN_EXPIRES_IN);
 
                 res.status(200).json({
