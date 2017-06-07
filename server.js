@@ -6,7 +6,8 @@ var express    = require('express'),
     mongoose = require('mongoose'),
     Account = require('./app/data/AccountModel'),
     verifyToken = require('./app/utils/verifyToken'),
-    authorizeForAccount = require('./app/utils/authorizeForAccount');
+    authorizeForAccount = require('./app/utils/authorizeForAccount'),
+    authorizeForTransferAccount = require('./app/utils/authorizeForTransferAccount');
 
 // configure app to use bodyParser()
 // this will let us get the data from a POST
@@ -25,15 +26,15 @@ db.on('open', function(){
   console.log("Connected to mongodb");
 });
 
-router.get('/account/:number', verifyToken, function(req, res){
+router.get('/account/:number', verifyToken, authorizeForAccount, function(req, res){
   routes.retrieveAccountInfo(req, res);
 });
 
-router.post('/deposit', verifyToken, function(req, res) {
+router.post('/deposit', verifyToken, authorizeForAccount, function(req, res) {
   routes.deposit(req, res);
 });
 
-router.post('/transfer', verifyToken, function(req, res) {
+router.post('/transfer', verifyToken, authorizeForTransferAccount, function(req, res) {
   routes.transfer(req, res)
 });
 

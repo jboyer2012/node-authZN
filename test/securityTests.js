@@ -61,9 +61,31 @@ describe('Authorization', function(){
         request(appUnderTest)
             .post('/banker/withdraw')
             .send(postData)
-            .set('Accept', 'application/json')
             .expect(403, done);
 
+    });
+
+    it('should not allow a user to view another account balance', function(done){
+        request(appUnderTest)
+            .get('/banker/account/434545')
+            .set('x-access-token', token)
+            .expect(403, done);
+    });
+
+    it('should not allow a user to deposit into an unauthorized account', function(done){
+        var postData = { "number": "434545", "amount": 450, "token": token };
+        request(appUnderTest)
+            .post('/banker/transfer')
+            .send(postData)
+            .expect(403, done);
+    });
+
+    it('should not allow a user to transfer to or from an unauthorized account', function(done){
+        var postData = { "fromNumber": "434545", "toNumber": "123456", "amount": 500, "token": token }
+        request(appUnderTest)
+            .post('/banker/transfer')
+            .send(postData)
+            .expect(403, done);
     });
 
     after(function(){
