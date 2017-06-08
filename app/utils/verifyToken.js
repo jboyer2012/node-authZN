@@ -4,7 +4,7 @@ var constants = require('../config/constants');
 // This is middleware that is used to verify the token
 
 module.exports = function(req, res, next){
-    // check header or url parameters or post parameters for token
+    // check header or post parameters for token
     var token = req.body.token || req.headers['x-access-token'];
 
     // decode token
