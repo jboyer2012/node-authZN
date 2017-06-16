@@ -1,7 +1,7 @@
 # node-authZN
 Demonstrating a solution for complete mediation in a Node.js application.
 
-Watch me build this application on my blog post on [Securing your Node API](https://greenmachinesec.wordpress.com/2017/06/07/secure-your-api-in-node-js/ "Secure Your API in Node.js").
+Watch me build this application in my blog post on [Securing your Node API](https://greenmachinesec.wordpress.com/2017/06/07/secure-your-api-in-node-js/ "Secure Your API in Node.js").
 
 This application used JSON Web Tokens for authentication and implements custom authorization for data.
 
