@@ -14,6 +14,19 @@ module.exports = {
         });
     },
 
+    createAccount: function(req, res) {
+        const newAccount = new Account();
+        newAccount.accountNumber = req.body.accountNumber;
+        newAccount.balance = req.body.balance || 0;
+
+        newAccount.save(function(err) {
+            if(err){
+                console.log("Error: " + err);
+            }
+            res.json({ status: "Success", accountNumber: newAccount.accountNumber });
+        })
+    },
+
     deposit: function(req, res) {
         Account.findOne({ accountNumber: req.body.number }, function(err, account){
             if(err){
@@ -101,8 +114,8 @@ module.exports = {
             } else {
                 var newUser = new User();
 
-                newUser.email = email;
-                newUser.password = newUser.generateHash(password);
+                newUser.username = req.body.username;
+                newUser.password = newUser.generateHash(req.body.password);
             }
 
             newUser.save(function(err){
@@ -136,7 +149,7 @@ module.exports = {
 
                 res.status(200).json({
                     success: true,
-                    message: "Login successful" + user.email,
+                    message: "Login successful" + user.username,
                     email: user.email,
                     token: token
                 });
