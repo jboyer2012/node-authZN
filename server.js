@@ -30,6 +30,10 @@ router.get('/account/:number', verifyToken, authorizeForAccount, function(req, r
   routes.retrieveAccountInfo(req, res);
 });
 
+router.post('/createAccount', verifyToken, function(req, res){
+  routes.createAccount(req, res);
+});
+
 router.post('/deposit', verifyToken, authorizeForAccount, function(req, res) {
   routes.deposit(req, res);
 });

@@ -3,9 +3,11 @@
   "main": "server.js",
   "dependencies": {
     "bcrypt": "^1.0.2",
+    "bcrypt-nodejs": "0.0.3",
     "body-parser": "~1.0.1",
     "express": "~4.0.0",
-    "jsonwebtoken": "^7.4.1"
+    "jsonwebtoken": "^7.4.1",
+    "mongoose": "^4.13.4"
   },
   "scripts": {
     "start": "node server.js",
