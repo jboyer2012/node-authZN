@@ -5,7 +5,14 @@ var constants = require('../config/constants');
 
 module.exports = function(req, res, next){
     // check header or post parameters for token
-    var token = req.body.token || req.headers['x-access-token'];
+    var token = req.body.token || req.headers.authorization;
+
+    if(token && req.method == 'GET') {
+        console.log(`Firing replace. Method is ${req.method}`);
+        token = token.replace(/^Token token=/i, '');
+    }
+
+    console.log(`The token for ${req.method} is ${token}`);
 
     // decode token
     if (token){

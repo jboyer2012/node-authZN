@@ -38,7 +38,7 @@ describe('Transactions that require authentication', function(){
         request(appUnderTest)
             .get('/banker/account/123456')
             .set('Accept', 'application/json')
-            .set('x-access-token', token)
+            .set('Authorization', 'Token token=' + token)
             .expect(200)
             .expect('{"accountBalance":500}', done);
     });

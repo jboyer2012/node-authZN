@@ -144,7 +144,7 @@ module.exports = {
                     res.status(400).json({ success: false, message: "Login incorrect" });
                 }
 
-                var payload = { username: user.username };
+                var payload = { username: user.username, authorizedAccounts: user.authorizedAccounts };
                 var token = createToken(payload, constants.TOKEN_EXPIRES_IN);
 
                 res.status(200).json({

@@ -68,7 +68,7 @@ describe('Authorization', function(){
     it('should not allow a user to view another account balance', function(done){
         request(appUnderTest)
             .get('/banker/account/434545')
-            .set('x-access-token', token)
+            .set('Authorization', 'Token token=' + token)
             .expect(403, done);
     });
 
