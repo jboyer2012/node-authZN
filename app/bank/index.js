@@ -122,7 +122,7 @@ module.exports = {
                 if(err) {
                     throw err;
                 }
-                res.status(200).json({ success: true, message: 'User created!' });
+                res.status(201).json({ success: true, message: 'User created!' });
             });
 
         })
